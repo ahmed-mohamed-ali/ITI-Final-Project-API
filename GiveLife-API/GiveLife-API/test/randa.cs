@@ -4,5 +4,6 @@ public class randa
 {
 	public Class1()
 	{
+
 	}
 }
