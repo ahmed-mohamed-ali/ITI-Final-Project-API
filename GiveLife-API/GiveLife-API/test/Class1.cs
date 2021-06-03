@@ -1,16 +1,6 @@
-﻿susing System;
-
-/// <summary>
-/// Summary description for Class1
-/// </summary>
-public class Class1
+﻿
+namespace GiveLife_API.test
 {
-	public Sabrina()
-	{
-		//
-		// TODO: Add constructor logic here
-		//sabrina
-		//sss
-		//
-	}
+    {
+    }
 }
