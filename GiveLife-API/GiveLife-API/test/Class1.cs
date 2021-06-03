@@ -8,7 +8,5 @@ namespace GiveLife_API.test
     public class Class1
     {
         string x = "mayada";
-       
-       
     }
 }
