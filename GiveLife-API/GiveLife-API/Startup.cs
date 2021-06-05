@@ -17,6 +17,7 @@ namespace GiveLife_API
 {
     public class Startup
     {
+        string MyAllowSpecificOrigins = "m";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -27,8 +28,18 @@ namespace GiveLife_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.AllowAnyOrigin();
+                });
+            });
             services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling =
+                 Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "GiveLife_API", Version = "v1" });
@@ -47,7 +58,7 @@ namespace GiveLife_API
             }
 
             app.UseRouting();
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
