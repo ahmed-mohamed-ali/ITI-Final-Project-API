@@ -1,0 +1,70 @@
+﻿{
+   "ContextClassName": "GiveLifeContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "DoNotCombineNamespace": false,
+   "IdReplace": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "ProjectRootNamespace": "GiveLifeAPI",
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Cases]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Cupon]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Group]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[OnlineDonner]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Organization]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Post]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Region]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[RegionAdmin]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[RegionCoordinator]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[sysdiagrams]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[User]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[User_Group]"
+      }
+   ],
+   "UseDatabaseNames": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseSpatial": false
+}

@@ -1,6 +1,8 @@
+using GiveLifeAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,6 +33,7 @@ namespace GiveLife_API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "GiveLife_API", Version = "v1" });
             });
+            services.AddDbContext<GiveLifeContext>(option => option.UseSqlServer(Configuration.GetConnectionString("GiveLife")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
