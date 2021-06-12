@@ -11,7 +11,7 @@ namespace GiveLifeAPI.Models
         [Key]
         [Column("DonnerID")]
         public int DonnerId { get; set; }
-        public int? WalletBalance { get; set; }
+        public decimal? WalletBalance { get; set; }
         [Required]
         [StringLength(8)]
         public string Password { get; set; }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GiveLifeAPI.Models;
+using GiveLife_API.Models;
 
 namespace GiveLife_API.Controllers
 {
@@ -97,6 +98,70 @@ namespace GiveLife_API.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        //RegionCoordinator can donnate to post
+        // put: api/Posts/donate/5
+        [HttpPut("donate/{id}")]
+        public async Task<IActionResult> donatePost(int id,int? coordId,int? OnlinedonnerId,decimal donateAmount)
+        {
+            RegionCoordinator regionCoordinator=null;
+            OnlineDonner onlineDonner=null;
+            if (!PostExists(id))
+            {
+                return NotFound();
+            }
+
+            //get post
+            var post = await _context.Post.FindAsync(id);
+            //get region Admin
+            var regionAdmin= await _context.RegionAdmin.FirstOrDefaultAsync(ra=>ra.RegionId==post.RegionId);
+            if (coordId != null&& OnlinedonnerId != null)
+            {
+                return BadRequest();
+            }
+            else if(coordId != null)
+            {
+                 regionCoordinator = await _context.RegionCoordinator.FirstOrDefaultAsync(rc => rc.CoordId == coordId);
+                regionCoordinator.WalletBalance = regionCoordinator.WalletBalance - donateAmount;
+            }else if(OnlinedonnerId != null)
+            {
+                onlineDonner = await _context.OnlineDonner.FirstOrDefaultAsync(od => od.DonnerId == OnlinedonnerId);
+                onlineDonner.WalletBalance = onlineDonner.WalletBalance-donateAmount;        
+            }
+            else
+            {
+                return NotFound("Donner not exist");
+            }
+
+
+            post.RestAmount = post.RestAmount - donateAmount;
+            regionAdmin.BankAccountBalance = regionAdmin.BankAccountBalance + donateAmount;
+            
+            _context.Entry(post).State = EntityState.Modified;
+            _context.Entry(regionAdmin).State = EntityState.Modified;
+            if (onlineDonner != null)
+            {
+            _context.Entry(onlineDonner).State = EntityState.Modified;
+
+            }
+            if (regionCoordinator!=null)
+            {
+
+            _context.Entry(regionCoordinator).State = EntityState.Modified;
+            }
+            _context.Add(new Donnation() { DonnationAmout = donateAmount , RegionCoordinatorId=regionCoordinator?.CoordId,OnlineDonnerId=onlineDonner?.DonnerId,RegionId=post.RegionId });
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+                }
+
+            return Ok(post);
         }
 
         private bool PostExists(int id)

@@ -99,6 +99,34 @@ namespace GiveLife_API.Controllers
             return NoContent();
         }
 
+
+        // PUT: api/RegionCoordinators/deposite/5
+
+        [HttpPut("deposite/{id}")]
+        public async Task<IActionResult> DepositeWallet(int id, decimal Amount)
+        {
+            if (!RegionCoordinatorExists(id))
+            {
+                return NotFound();
+            }
+            var regionCoordinator = await _context.RegionCoordinator.FindAsync(id);
+            regionCoordinator.WalletBalance = regionCoordinator.WalletBalance + Amount;
+            _context.Entry(regionCoordinator).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            return Ok(regionCoordinator);
+        }
+
+
         private bool RegionCoordinatorExists(int id)
         {
             return _context.RegionCoordinator.Any(e => e.CoordId == id);

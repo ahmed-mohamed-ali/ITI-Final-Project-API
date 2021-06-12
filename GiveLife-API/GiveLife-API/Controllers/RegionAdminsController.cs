@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GiveLifeAPI.Models;
+using GiveLife_API.Models;
 
 namespace GiveLife_API.Controllers
 {
@@ -99,9 +100,43 @@ namespace GiveLife_API.Controllers
             return NoContent();
         }
 
+        //RegionAdmin transform money to coordinator
+        [HttpPut("transform/{AdminId}")]
+        public async Task<IActionResult> transformMoney (int AdminId,int coordID, decimal Amount)
+        {
+            if (!RegionAdminExists(AdminId)||!RegionCoordExists(coordID))
+            {
+                return NotFound();
+            }
+            var regionCoordinator = await _context.RegionCoordinator.FindAsync(coordID);
+            regionCoordinator.WalletBalance = regionCoordinator.WalletBalance + Amount;
+            var regionAdmin = await _context.RegionAdmin.FindAsync(AdminId);
+            regionAdmin.BankAccountBalance = regionAdmin.BankAccountBalance - Amount;
+
+            _context.Entry(regionCoordinator).State = EntityState.Modified;
+            _context.Entry(regionAdmin).State = EntityState.Modified;
+            _context.Add(new MoneyTransformation() { RegionAdminId = regionAdmin.AdminId, RegionCoordinatorId = regionCoordinator.CoordId,MoneyAmount=Amount });
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            return Ok(regionCoordinator);
+        }
+
         private bool RegionAdminExists(int id)
         {
             return _context.RegionAdmin.Any(e => e.AdminId == id);
+        }
+        private bool RegionCoordExists(int id)
+        {
+            return _context.RegionCoordinator.Any(e => e.CoordId == id);
         }
     }
 }
