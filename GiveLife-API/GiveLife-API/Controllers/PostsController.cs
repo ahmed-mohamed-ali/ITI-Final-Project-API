@@ -49,7 +49,7 @@ namespace GiveLife_API.Controllers
         public async Task<ActionResult<Post>> GetPost(string needCategory)
         {
             
-            return new JsonResult( _context.Post.Where(h => h.NeedCatogry.StartsWith(needCategory)).ToArray());
+            return new JsonResult( _context.Post.Where(h => h.NeedCatogry.ToString().StartsWith(needCategory)).ToArray());
         }
 
         //////////////////////////FILTER BY REST AMOUNT
