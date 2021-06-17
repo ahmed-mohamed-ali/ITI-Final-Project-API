@@ -153,27 +153,6 @@ namespace GiveLife_API.Controllers
                 return Content("Bank Account Balance is less than required Amount of money");
             }
 
-            organisation.WalletBalance = organisation.WalletBalance + Amount;
-
-            regionAdmin.BankAccountBalance = regionAdmin.BankAccountBalance - Amount;
-
-            _context.Entry(organisation).State = EntityState.Modified;
-            _context.Entry(regionAdmin).State = EntityState.Modified;
-            _context.Add(new MoneyTransformation() { RegionAdminId = regionAdmin.AdminId, OrganizationId = organisation.OrganizationId, MoneyAmount = Amount });
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-
-            return Ok(organisation);
-        }
-
         private bool RegionAdminExists(int id)
         {
             return _context.RegionAdmin.Any(e => e.AdminId == id);
@@ -181,10 +160,6 @@ namespace GiveLife_API.Controllers
         private bool RegionCoordExists(int id)
         {
             return _context.RegionCoordinator.Any(e => e.CoordId == id);
-        }
-        private bool OrganisationExists(int id)
-        {
-            return _context.Organization.Any(e => e.OrganizationId == id);
         }
     }
 }

@@ -71,6 +71,29 @@ namespace GiveLife_API.Controllers
 
             return NoContent();
         }
+        //Change case status
+
+        [HttpPut]
+        [Route("changeStatus/{id}")]
+
+        public async Task<IActionResult> PutCases(string id, string status) {
+          
+            var case1 =await _context.Cases.FindAsync(id);
+            if (case1 == null)
+            {
+                return BadRequest();
+            }
+            if (((status.ToLower()) != "pending") && ((status.ToLower()) != "accepted") && ((status.ToLower()) != "rejected"))
+            {
+                return BadRequest();
+            }
+           
+            case1.Status = status;
+            _context.Entry(case1).State = EntityState.Modified;
+            _context.SaveChanges();
+            return Ok(case1);
+
+        }
 
         // POST: api/Cases
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
