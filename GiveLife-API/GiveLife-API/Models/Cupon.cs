@@ -21,7 +21,7 @@ namespace GiveLifeAPI.Models
         [StringLength(14)]
         public string CaseNationalId { get; set; }
         [Column("CoordID")]
-        public int CoordId { get; set; }
+        public int? CoordId { get; set; }
         [Column("RegionID")]
         public int RegionId { get; set; }
         public bool Deleted { get; set; }

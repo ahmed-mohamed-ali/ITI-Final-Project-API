@@ -4,14 +4,16 @@ using GiveLifeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GiveLife_API.Migrations
 {
     [DbContext(typeof(GiveLifeContext))]
-    partial class GiveLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20210621165605_update post status")]
+    partial class updatepoststatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,10 +47,10 @@ namespace GiveLife_API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("RegionID");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
-                        .HasColumnType("int")
+                        .HasColumnType("nvarchar(15)")
                         .HasDefaultValueSql("(N'pending')");
 
                     b.HasKey("NationalId");
@@ -75,7 +77,7 @@ namespace GiveLife_API.Migrations
                         .HasColumnType("nvarchar(14)")
                         .HasColumnName("CaseNationalID");
 
-                    b.Property<int?>("CoordId")
+                    b.Property<int>("CoordId")
                         .HasColumnType("int")
                         .HasColumnName("CoordID");
 
@@ -242,7 +244,7 @@ namespace GiveLife_API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("RegionID");
 
-                    b.Property<decimal>("RequiredAmount")
+                    b.Property<decimal?>("RequiredAmount")
                         .HasColumnType("money");
 
                     b.Property<decimal?>("RestAmount")
@@ -493,7 +495,8 @@ namespace GiveLife_API.Migrations
                     b.HasOne("GiveLifeAPI.Models.RegionCoordinator", "Coord")
                         .WithMany("Cupon")
                         .HasForeignKey("CoordId")
-                        .HasConstraintName("FK_Cupon_RegionCoordinator1");
+                        .HasConstraintName("FK_Cupon_RegionCoordinator1")
+                        .IsRequired();
 
                     b.HasOne("GiveLifeAPI.Models.Region", "Region")
                         .WithMany("Cupon")

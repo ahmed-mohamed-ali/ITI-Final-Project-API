@@ -10,6 +10,11 @@ namespace GiveLifeAPI.Models
     {
         food,medicine,money,cloths
     }
+    public enum PostStatus
+    {
+        completed=2,pending=1
+    }
+
     public partial class Post
     {
         [Column("PostID")]
@@ -26,11 +31,11 @@ namespace GiveLifeAPI.Models
         [StringLength(14)]
         public string CaseId { get; set; }
         [Column(TypeName = "money")]
-        public decimal? RequiredAmount { get; set; }
+        public decimal RequiredAmount { get; set; }
         [Column(TypeName = "money")]
         public decimal? RestAmount { get; set; }
         [StringLength(50)]
-        public string Status { get; set; }
+        public PostStatus Status { get; set; }
         [StringLength(50)]
         public NeedCatogry NeedCatogry { get; set; }
         public bool? Deleted { get; set; }

@@ -76,7 +76,7 @@ namespace GiveLife_API.Controllers
         [HttpPut]
         [Route("changeStatus/{id}")]
 
-        public async Task<IActionResult> PutCases(string id, string status) {
+        public async Task<IActionResult> ChangeStatus(string id, string status) {
           
             var case1 =await _context.Cases.FindAsync(id);
             if (case1 == null)
@@ -88,7 +88,7 @@ namespace GiveLife_API.Controllers
                 return BadRequest();
             }
            
-            case1.Status = status;
+            case1.Status = (CaseStatus)Enum.Parse(typeof(CaseStatus), status.ToLower(), true); ;
             _context.Entry(case1).State = EntityState.Modified;
             _context.SaveChanges();
             return Ok(case1);
