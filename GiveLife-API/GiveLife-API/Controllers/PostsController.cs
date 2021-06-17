@@ -28,7 +28,7 @@ namespace GiveLife_API.Controllers
             return await _context.Post.ToListAsync();
         }
 
-        // GET: api/Posts/5
+        //GET: api/Posts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
@@ -41,6 +41,26 @@ namespace GiveLife_API.Controllers
 
             return post;
         }
+
+        /////////////////////////////////FILTER BY NEED CATEGORY 
+
+        [HttpGet("{needCategory:alpha}")]
+       
+        public async Task<ActionResult<Post>> GetPost(string needCategory)
+        {
+            
+            return new JsonResult( _context.Post.Where(h => h.NeedCatogry.StartsWith(needCategory)).ToArray());
+        }
+
+        //////////////////////////FILTER BY REST AMOUNT
+        [HttpGet]
+        [Route("filterRestAmount/{restAmount}")]
+        public async Task<ActionResult<Post>> GetPost(decimal restAmount)
+        {
+
+            return new JsonResult(_context.Post.Where(h => h.RestAmount.Equals(restAmount)).ToArray());
+        }
+
 
         // PUT: api/Posts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

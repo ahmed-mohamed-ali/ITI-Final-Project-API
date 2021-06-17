@@ -72,6 +72,28 @@ namespace GiveLife_API.Controllers
             return NoContent();
         }
 
+        //Check cupon 
+
+        [HttpPut]
+        [Route("checkCupon/{id}")]
+
+        public async Task<IActionResult> PutCases(int id, string caseNationalId)
+        {
+
+            var cupon1 = await _context.Cupon.FindAsync(id);
+            if (cupon1 == null)
+            {
+                return BadRequest();
+            }
+            if (cupon1.CaseNationalId != caseNationalId) {
+                return NotFound();
+            }
+
+            return Ok(cupon1);
+
+        }
+
+
         // POST: api/Cupons
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]

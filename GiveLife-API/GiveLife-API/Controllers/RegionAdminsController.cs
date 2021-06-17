@@ -130,6 +130,44 @@ namespace GiveLife_API.Controllers
             return Ok(regionCoordinator);
         }
 
+
+        //
+        //RegionAdmin change status
+        [HttpPut("changeStatus/{AdminId}")]
+        public async Task<IActionResult> ChangeStatus(int AdminId, string caseId, string status)
+        {
+            if (!RegionAdminExists(AdminId) || !CaseExists(caseId))
+            {
+                return NotFound();
+            }
+            var case1 = await _context.Cases.FindAsync(caseId);
+            var admin1 = await _context.RegionAdmin.FindAsync(AdminId);
+            if(case1.RegionId != admin1.RegionId)
+            {
+                return NotFound();
+            }
+
+            if (((status.ToLower()) != "pending") && ((status.ToLower()) != "accepted") && ((status.ToLower()) != "rejected"))
+            {
+                return BadRequest();
+            }
+
+            case1.Status = status;
+            _context.Entry(case1).State = EntityState.Modified;
+           
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            return Ok(case1);
+        }
+
         private bool RegionAdminExists(int id)
         {
             return _context.RegionAdmin.Any(e => e.AdminId == id);
@@ -137,6 +175,10 @@ namespace GiveLife_API.Controllers
         private bool RegionCoordExists(int id)
         {
             return _context.RegionCoordinator.Any(e => e.CoordId == id);
+        }
+        private bool CaseExists(string id)
+        {
+            return _context.Cases.Any(e => e.NationalId == id);
         }
     }
 }

@@ -41,6 +41,16 @@ namespace GiveLife_API.Controllers
             return region;
         }
 
+        /////////////////////////////////FILTER BY Name 
+
+        [HttpGet("{name:alpha}")]
+
+        public async Task<ActionResult<Post>> GetRegion(string name)
+        {
+
+            return new JsonResult(_context.Region.Where(h => h.Name.StartsWith(name)).ToArray());
+        }
+
         // PUT: api/Regions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
