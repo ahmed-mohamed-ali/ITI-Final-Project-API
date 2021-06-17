@@ -4,14 +4,16 @@ using GiveLifeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GiveLife_API.Migrations
 {
     [DbContext(typeof(GiveLifeContext))]
-    partial class GiveLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20210616104302_update cupon2")]
+    partial class updatecupon2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

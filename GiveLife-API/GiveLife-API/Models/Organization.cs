@@ -14,8 +14,8 @@ namespace GiveLifeAPI.Models
         }
 
         [Key]
-        [Column("OrgID")]
-        public int OrgId { get; set; }
+        [Column("OrganizationID")]
+        public int OrganizationId { get; set; }
         [Required]
         [StringLength(50)]
         public string OrgName { get; set; }

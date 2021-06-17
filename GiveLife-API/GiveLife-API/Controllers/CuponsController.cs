@@ -99,6 +99,22 @@ namespace GiveLife_API.Controllers
             return NoContent();
         }
 
+        // GET: api/Cupons/5
+        [HttpGet("CheckCupon/{Cuponid}")]
+        public  IActionResult checkCupon(int Cuponid, string CaseID, string CuponIdentity, string needCatogry)
+        {
+
+            if (!CuponExists(Cuponid))
+                return NotFound();
+            var cupon = _context.Cupon.Find(Cuponid);
+            if (cupon.CaseNationalId.ToLower() == CaseID.ToLower() && cupon.CuponIdentity.ToLower() == CuponIdentity.ToLower() && cupon.ProductCategory.ToString() == needCatogry.ToLower()&&cupon.ExpireDate>=DateTime.Now)
+            {
+                return Ok(cupon);
+            }
+            return Content("cupon not valid");
+
+        }
+
         private bool CuponExists(int id)
         {
             return _context.Cupon.Any(e => e.CuponId == id);

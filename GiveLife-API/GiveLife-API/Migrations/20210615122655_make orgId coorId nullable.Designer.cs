@@ -4,14 +4,16 @@ using GiveLifeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GiveLife_API.Migrations
 {
     [DbContext(typeof(GiveLifeContext))]
-    partial class GiveLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20210615122655_make orgId coorId nullable")]
+    partial class makeorgIdcoorIdnullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,9 +68,6 @@ namespace GiveLife_API.Migrations
                         .HasColumnName("CuponID")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("AmountOfMoney")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("CaseNationalId")
                         .IsRequired()
                         .HasMaxLength(14)
@@ -79,19 +78,19 @@ namespace GiveLife_API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("CoordID");
 
-                    b.Property<string>("CuponIdentity")
+                    b.Property<string>("CuponValue")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("ExpireDate")
-                        .HasColumnType("datetime2");
+                    b.Property<bool?>("Expire")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ProductCategory")
+                    b.Property<string>("ProductCategory")
                         .HasMaxLength(50)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("RegionId")
                         .HasColumnType("int")
@@ -159,10 +158,10 @@ namespace GiveLife_API.Migrations
 
             modelBuilder.Entity("GiveLifeAPI.Models.Organization", b =>
                 {
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("OrgId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("OrganizationID")
+                        .HasColumnName("OrgID")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ActiveType")
@@ -194,7 +193,7 @@ namespace GiveLife_API.Migrations
                     b.Property<decimal?>("WalletBalance")
                         .HasColumnType("money");
 
-                    b.HasKey("OrganizationId");
+                    b.HasKey("OrgId");
 
                     b.HasIndex("RegionId");
 
@@ -226,9 +225,9 @@ namespace GiveLife_API.Migrations
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("NeedCatogry")
+                    b.Property<string>("NeedCatogry")
                         .HasMaxLength(50)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("OrgId")
                         .HasColumnType("int")
@@ -447,18 +446,13 @@ namespace GiveLife_API.Migrations
                     b.Property<decimal>("MoneyAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("OrganizationId")
-                        .HasColumnType("int");
-
                     b.Property<int>("RegionAdminId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RegionCoordinatorId")
+                    b.Property<int>("RegionCoordinatorId")
                         .HasColumnType("int");
 
                     b.HasKey("id");
-
-                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("RegionAdminId");
 
@@ -622,10 +616,6 @@ namespace GiveLife_API.Migrations
 
             modelBuilder.Entity("GiveLife_API.Models.MoneyTransformation", b =>
                 {
-                    b.HasOne("GiveLifeAPI.Models.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId");
-
                     b.HasOne("GiveLifeAPI.Models.RegionAdmin", "regionAdmin")
                         .WithMany()
                         .HasForeignKey("RegionAdminId")
@@ -634,9 +624,9 @@ namespace GiveLife_API.Migrations
 
                     b.HasOne("GiveLifeAPI.Models.RegionCoordinator", "RegionCoordinator")
                         .WithMany()
-                        .HasForeignKey("RegionCoordinatorId");
-
-                    b.Navigation("Organization");
+                        .HasForeignKey("RegionCoordinatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("regionAdmin");
 

@@ -11,10 +11,11 @@ namespace GiveLifeAPI.Models
         [Column("CuponID")]
         public int CuponId { get; set; }
         [StringLength(50)]
-        public string CuponValue { get; set; }
+        public string CuponIdentity { get; set; }
+        public decimal AmountOfMoney { get; set; }
         [StringLength(50)]
-        public string ProductCategory { get; set; }
-        public bool? Expire { get; set; }
+        public NeedCatogry ProductCategory { get; set; }
+        public DateTime? ExpireDate { get; set; }
         [Required]
         [Column("CaseNationalID")]
         [StringLength(14)]

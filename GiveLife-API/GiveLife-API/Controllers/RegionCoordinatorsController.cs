@@ -100,7 +100,7 @@ namespace GiveLife_API.Controllers
         }
 
 
-        // PUT: api/RegionCoordinators/deposite/5
+        // PUT: /api/RegionCoordinators/deposite/1?Amount=10
 
         [HttpPut("deposite/{id}")]
         public async Task<IActionResult> DepositeWallet(int id, decimal Amount)

@@ -100,7 +100,7 @@ namespace GiveLife_API.Controllers
             return NoContent();
         }
 
-        //RegionCoordinator can donnate to post
+        //RegionCoordinator or inline donner can donnate to post
         // put: api/Posts/donate/5
         [HttpPut("donate/{id}")]
         public async Task<IActionResult> donatePost(int id,int? coordId,int? OnlinedonnerId,decimal donateAmount)

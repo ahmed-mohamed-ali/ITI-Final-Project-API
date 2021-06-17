@@ -12,9 +12,11 @@ namespace GiveLife_API.Models
         
         public int id { get; set; }
         public int RegionAdminId { get; set; }
-        public int RegionCoordinatorId { get; set; }
+        public int? RegionCoordinatorId { get; set; }
+        public int? OrganizationId { get; set; }
         public decimal MoneyAmount { get; set; }
         public virtual RegionAdmin regionAdmin{ get; set; }
         public virtual RegionCoordinator RegionCoordinator { get; set; }
+        public virtual Organization Organization { get; set; }
     }
 }

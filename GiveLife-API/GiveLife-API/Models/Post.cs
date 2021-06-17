@@ -6,12 +6,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GiveLifeAPI.Models
 {
+    public enum NeedCatogry
+    {
+        food,medicine,money,cloths
+    }
     public partial class Post
     {
         [Column("PostID")]
         public int PostId { get; set; }
         [Column("CoordID")]
-        public int CoordId { get; set; }
+        public int? CoordId { get; set; }
         [Column("RegionID")]
         public int RegionId { get; set; }
         [StringLength(500)]
@@ -28,10 +32,10 @@ namespace GiveLifeAPI.Models
         [StringLength(50)]
         public string Status { get; set; }
         [StringLength(50)]
-        public string NeedCatogry { get; set; }
+        public NeedCatogry NeedCatogry { get; set; }
         public bool? Deleted { get; set; }
         [Column("OrgID")]
-        public int OrgId { get; set; }
+        public int? OrgId { get; set; }
 
         [ForeignKey("CaseId")]
         [InverseProperty("Post")]

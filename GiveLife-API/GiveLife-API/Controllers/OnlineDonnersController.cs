@@ -99,6 +99,34 @@ namespace GiveLife_API.Controllers
             return NoContent();
         }
 
+
+        //// PUT: /api/OnlineDonners/deposite/1?Amount=10
+
+        [HttpPut("deposite/{id}")]
+        public async Task<IActionResult> DepositeWallet(int id, decimal Amount)
+        {
+            if (!OnlineDonnerExists(id))
+            {
+                return NotFound();
+            }
+            var onlinedonner = await _context.OnlineDonner.FindAsync(id);
+            onlinedonner.WalletBalance = onlinedonner.WalletBalance + Amount;
+            _context.Entry(onlinedonner).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            return Ok(onlinedonner);
+        }
+
+
         private bool OnlineDonnerExists(int id)
         {
             return _context.OnlineDonner.Any(e => e.DonnerId == id);

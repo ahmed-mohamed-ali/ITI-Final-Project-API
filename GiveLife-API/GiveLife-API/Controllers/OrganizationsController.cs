@@ -46,7 +46,7 @@ namespace GiveLife_API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrganization(int id, Organization organization)
         {
-            if (id != organization.OrgId)
+            if (id != organization.OrganizationId)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace GiveLife_API.Controllers
             _context.Organization.Add(organization);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOrganization", new { id = organization.OrgId }, organization);
+            return CreatedAtAction("GetOrganization", new { id = organization.OrganizationId }, organization);
         }
 
         // DELETE: api/Organizations/5
@@ -101,7 +101,7 @@ namespace GiveLife_API.Controllers
 
         private bool OrganizationExists(int id)
         {
-            return _context.Organization.Any(e => e.OrgId == id);
+            return _context.Organization.Any(e => e.OrganizationId == id);
         }
     }
 }

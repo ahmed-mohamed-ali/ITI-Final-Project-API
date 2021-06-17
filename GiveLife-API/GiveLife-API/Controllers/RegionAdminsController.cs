@@ -101,16 +101,23 @@ namespace GiveLife_API.Controllers
         }
 
         //RegionAdmin transform money to coordinator
-        [HttpPut("transform/{AdminId}")]
-        public async Task<IActionResult> transformMoney (int AdminId,int coordID, decimal Amount)
+        ///put: api/RegionAdmins/transformToCoord/1?coordID=1&Amount=100"
+        [HttpPut("transformToCoord/{AdminId}")]
+        public async Task<IActionResult> TransformMoney (int AdminId,int coordID, decimal Amount)
         {
             if (!RegionAdminExists(AdminId)||!RegionCoordExists(coordID))
             {
                 return NotFound();
             }
             var regionCoordinator = await _context.RegionCoordinator.FindAsync(coordID);
-            regionCoordinator.WalletBalance = regionCoordinator.WalletBalance + Amount;
             var regionAdmin = await _context.RegionAdmin.FindAsync(AdminId);
+            if (regionAdmin.BankAccountBalance < Amount)
+            {
+                return Content("Bank Account Balance is less than required Amount of money");
+            }
+
+                regionCoordinator.WalletBalance = regionCoordinator.WalletBalance + Amount;
+            
             regionAdmin.BankAccountBalance = regionAdmin.BankAccountBalance - Amount;
 
             _context.Entry(regionCoordinator).State = EntityState.Modified;
@@ -130,6 +137,43 @@ namespace GiveLife_API.Controllers
             return Ok(regionCoordinator);
         }
 
+        //RegionAdmin transform money to organisation
+        ///put: api/RegionAdmins/transformToCoord/1?OrgId=1&Amount=100"
+        [HttpPut("transformToOrg/{AdminId}")]
+        public async Task<IActionResult> transformMoney(int AdminId, int OrgId, decimal Amount)
+        {
+            if (!RegionAdminExists(AdminId) || !RegionCoordExists(OrgId))
+            {
+                return NotFound();
+            }
+            var organisation = await _context.Organization.FindAsync(OrgId);
+            var regionAdmin = await _context.RegionAdmin.FindAsync(AdminId);
+            if (regionAdmin.BankAccountBalance < Amount)
+            {
+                return Content("Bank Account Balance is less than required Amount of money");
+            }
+
+            organisation.WalletBalance = organisation.WalletBalance + Amount;
+
+            regionAdmin.BankAccountBalance = regionAdmin.BankAccountBalance - Amount;
+
+            _context.Entry(organisation).State = EntityState.Modified;
+            _context.Entry(regionAdmin).State = EntityState.Modified;
+            _context.Add(new MoneyTransformation() { RegionAdminId = regionAdmin.AdminId, OrganizationId = organisation.OrganizationId, MoneyAmount = Amount });
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            return Ok(organisation);
+        }
+
         private bool RegionAdminExists(int id)
         {
             return _context.RegionAdmin.Any(e => e.AdminId == id);
@@ -137,6 +181,10 @@ namespace GiveLife_API.Controllers
         private bool RegionCoordExists(int id)
         {
             return _context.RegionCoordinator.Any(e => e.CoordId == id);
+        }
+        private bool OrganisationExists(int id)
+        {
+            return _context.Organization.Any(e => e.OrganizationId == id);
         }
     }
 }
