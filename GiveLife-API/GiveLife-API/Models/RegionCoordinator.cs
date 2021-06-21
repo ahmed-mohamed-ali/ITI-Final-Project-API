@@ -20,14 +20,17 @@ namespace GiveLifeAPI.Models
         [Required]
         [StringLength(50)]
         public string Name { get; set; }
-        [Column("RegionID")]
+        [Column("NationalID")]
+        [StringLength(14)]
+        public string NationalId { get; set; }
+         [Column("RegionID")]
         public int RegionId { get; set; }
-        [StringLength(16)]
+        
         public string VisaNum { get; set; }
         [Column(TypeName = "money")]
         public decimal? WalletBalance { get; set; }
         [Column("RegionAdminID")]
-        public int RegionAdminId { get; set; }
+        public int? RegionAdminId { get; set; }
         [Required]
         [StringLength(8)]
         public string Password { get; set; }

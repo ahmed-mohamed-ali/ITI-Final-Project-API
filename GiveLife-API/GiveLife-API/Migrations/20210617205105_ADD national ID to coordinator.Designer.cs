@@ -4,14 +4,16 @@ using GiveLifeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GiveLife_API.Migrations
 {
     [DbContext(typeof(GiveLifeContext))]
-    partial class GiveLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20210617205105_ADD national ID to coordinator")]
+    partial class ADDnationalIDtocoordinator
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,10 +250,10 @@ namespace GiveLife_API.Migrations
                     b.Property<decimal?>("RestAmount")
                         .HasColumnType("money");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("int")
+                        .HasColumnType("nvarchar(50)")
                         .HasDefaultValueSql("(N'pending')");
 
                     b.HasKey("PostId");
@@ -348,7 +350,7 @@ namespace GiveLife_API.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
-                    b.Property<int?>("RegionAdminId")
+                    b.Property<int>("RegionAdminId")
                         .HasColumnType("int")
                         .HasColumnName("RegionAdminID");
 
@@ -357,7 +359,8 @@ namespace GiveLife_API.Migrations
                         .HasColumnName("RegionID");
 
                     b.Property<string>("VisaNum")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
 
                     b.Property<decimal?>("WalletBalance")
                         .HasColumnType("money");
@@ -568,7 +571,8 @@ namespace GiveLife_API.Migrations
                     b.HasOne("GiveLifeAPI.Models.RegionAdmin", "RegionAdmin")
                         .WithMany("RegionCoordinator")
                         .HasForeignKey("RegionAdminId")
-                        .HasConstraintName("FK_RegionCoordinator_RegionAdmin1");
+                        .HasConstraintName("FK_RegionCoordinator_RegionAdmin1")
+                        .IsRequired();
 
                     b.HasOne("GiveLifeAPI.Models.Region", "Region")
                         .WithMany("RegionCoordinator")

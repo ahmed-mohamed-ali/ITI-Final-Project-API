@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GiveLifeAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GiveLife_API.Controllers
 {
@@ -25,6 +26,22 @@ namespace GiveLife_API.Controllers
         public async Task<ActionResult<IEnumerable<Cupon>>> GetCupon()
         {
             return await _context.Cupon.ToListAsync();
+        }
+
+        // GET: api/Cupons/getCoordinatorCupon
+        [HttpGet("getCoordinatorCupon"), Authorize]
+        public  ActionResult GetCoorCupons()
+        {
+            var currentUser = HttpContext.User;
+            int coordId = int.Parse(currentUser.Claims.FirstOrDefault(i => i.Type == "CoordinatorID").Value);
+            try { 
+            var cupons=  _context.Cupon.Include(cs => cs.CaseNational).Where(c => c.CoordId == coordId).ToList();
+                return Ok(new { Cupon = cupons, success = true });
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         // GET: api/Cupons/5

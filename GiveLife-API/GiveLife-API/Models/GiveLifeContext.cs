@@ -65,7 +65,7 @@ namespace GiveLifeAPI.Models
 
                 entity.HasOne(d => d.Coord)
                     .WithMany(p => p.Cupon)
-                    .HasForeignKey(d => d.CoordId)
+                    //.HasForeignKey(d => d.CoordId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Cupon_RegionCoordinator1");
 

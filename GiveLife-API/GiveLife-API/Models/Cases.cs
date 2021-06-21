@@ -29,7 +29,7 @@ namespace GiveLifeAPI.Models
         [StringLength(15)]
         public string Status { get; set; }
         public bool Deleted { get; set; }
-
+        
         [ForeignKey("RegionId")]
         [InverseProperty("Cases")]
         public virtual Region Region { get; set; }

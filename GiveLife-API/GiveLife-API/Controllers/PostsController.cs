@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GiveLifeAPI.Models;
 using GiveLife_API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GiveLife_API.Controllers
 {
@@ -40,6 +41,41 @@ namespace GiveLife_API.Controllers
             }
 
             return post;
+        }
+
+        // GET: api/Posts/getCoordinatorposts
+        [HttpGet("getCoordinatorposts"), Authorize]
+        public ActionResult GetCoorPosts()
+        {
+            var currentUser = HttpContext.User;
+            int coordId = int.Parse(currentUser.Claims.FirstOrDefault(i => i.Type == "CoordinatorID").Value);
+            try
+            {
+                var posts = _context.Post.Where(c => c.CoordId == coordId).ToList();
+                return Ok(new { Post = posts, success = true });
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
+        // GET: api/Posts/getRegionposts
+        [HttpGet("getRegionposts"), Authorize]
+        public ActionResult getRegionposts()
+        {
+            var currentUser = HttpContext.User;
+            int RegionId = int.Parse(currentUser.Claims.FirstOrDefault(i => i.Type == "RegionID").Value);
+            try
+            {
+                var posts = _context.Post.Where(c => c.RegionId == RegionId ).Where(c=>c.Status != PostStatus.completed).ToList();
+                return Ok(new { Post = posts, success = true });
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         /////////////////////////////////FILTER BY NEED CATEGORY 

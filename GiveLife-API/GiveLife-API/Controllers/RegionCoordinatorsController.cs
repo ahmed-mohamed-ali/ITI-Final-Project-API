@@ -6,6 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GiveLifeAPI.Models;
+using Microsoft.AspNetCore.Authorization;
+using GiveLife_API.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace GiveLife_API.Controllers
 {
@@ -15,30 +22,80 @@ namespace GiveLife_API.Controllers
     {
         private readonly GiveLifeContext _context;
 
-        public RegionCoordinatorsController(GiveLifeContext context)
+        public IConfiguration Configuration { get; }
+
+        public RegionCoordinatorsController(GiveLifeContext context, IConfiguration configuration)
         {
             _context = context;
+            Configuration = configuration;
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] CoordinatorLoginModel user)
+        {
+            if (user == null)
+            {
+                return BadRequest("Invalid client request");
+            }
+            var loginUser = _context.RegionCoordinator.FirstOrDefault(u => u.NationalId.ToLower() == user.NationalId.ToLower()&&u.Password.ToLower()==user.Password.ToLower());
+            if (loginUser==null)
+            {
+                return NotFound();
+            }
+
+            var token = generateToken(new List<Claim>()
+            {
+                new Claim ("CoordinatorID",loginUser.CoordId.ToString()),
+                new Claim("RegionID",loginUser.RegionId.ToString())
+            });
+
+            return Ok(new {Token= token,success=true });
+           
+        }
+
+         private string generateToken(List<Claim> claims)
+        {
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtOptions:Key"]));
+            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+            
+            var tokeOptions = new JwtSecurityToken(
+                issuer: Configuration["JwtOptions:Issuer"],
+                audience: Configuration["JwtOptions:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(90),
+                signingCredentials: signinCredentials
+            );
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+            return tokenString;
+
         }
 
         // GET: api/RegionCoordinators
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<RegionCoordinator>>> GetRegionCoordinator()
         {
-            return await _context.RegionCoordinator.ToListAsync();
+            //var currentUser = HttpContext.User;
+            //if (currentUser.HasClaim(c => c.Type == "CoordinatorID"))
+            //{
+            //    int x = int.Parse(currentUser.Claims.FirstOrDefault(i => i.Type == "CoordinatorID").Value);
+            //    return Ok(new { done = x});
+            //}
+                return await _context.RegionCoordinator.ToListAsync();
         }
 
         // GET: api/RegionCoordinators/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RegionCoordinator>> GetRegionCoordinator(int id)
+        [HttpGet("getProfile"),Authorize]
+        public async Task<ActionResult<RegionCoordinator>> GetONERegionCoordinator()
         {
-            var regionCoordinator = await _context.RegionCoordinator.FindAsync(id);
-
+            var currentUser = HttpContext.User;
+            int id = int.Parse(currentUser.Claims.FirstOrDefault(i => i.Type == "CoordinatorID").Value);
+            var regionCoordinator = await _context.RegionCoordinator.Include(rc => rc.Post).FirstOrDefaultAsync(r=>r.CoordId==id);
             if (regionCoordinator == null)
             {
                 return NotFound();
             }
 
-            return regionCoordinator;
+            return Ok(new { coordinator = regionCoordinator,success=true }); 
         }
 
         // PUT: api/RegionCoordinators/5
@@ -74,13 +131,38 @@ namespace GiveLife_API.Controllers
 
         // POST: api/RegionCoordinators
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<RegionCoordinator>> PostRegionCoordinator(RegionCoordinator regionCoordinator)
+        [HttpPost("Register")]
+        public async Task<ActionResult<RegionCoordinator>> PostRegionCoordinator(CoordinatorRegisterModel NewRegionCoordinator)
         {
+            if (RegionCoordinatorExistsByNationalID(NewRegionCoordinator.NID, NewRegionCoordinator.visa))
+            {
+                return Conflict("national id or visa num exist before");
+            }
+            
+            var region = _context.Region.FirstOrDefault(r => r.Name.ToLower() == NewRegionCoordinator.region.ToLower());
+            if (region == null)
+            {
+                return Conflict("region not exist");
+            }
+            RegionCoordinator regionCoordinator = new RegionCoordinator();
+            regionCoordinator.RegionId = region.RegionId;
+            regionCoordinator.Name = NewRegionCoordinator.name;
+            regionCoordinator.NationalId = NewRegionCoordinator.NID;
+            regionCoordinator.Password = NewRegionCoordinator.password;
+            regionCoordinator.VisaNum = NewRegionCoordinator.visa;
+            regionCoordinator.WalletBalance = 0;
+            regionCoordinator.Deleted = false;
             _context.RegionCoordinator.Add(regionCoordinator);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRegionCoordinator", new { id = regionCoordinator.CoordId }, regionCoordinator);
+            //try {
+                
+            //} catch {
+            //    return StatusCode(StatusCodes.Status500InternalServerError);
+            //}
+          
+
+            return Ok(new {message="coordinator register successfully",success=true});
         }
 
         // DELETE: api/RegionCoordinators/5
@@ -130,6 +212,10 @@ namespace GiveLife_API.Controllers
         private bool RegionCoordinatorExists(int id)
         {
             return _context.RegionCoordinator.Any(e => e.CoordId == id);
+        }
+        private bool RegionCoordinatorExistsByNationalID(string nationalId,string visanum)
+        {
+            return _context.RegionCoordinator.Any(e => e.NationalId == nationalId||e.VisaNum==visanum);
         }
     }
 }

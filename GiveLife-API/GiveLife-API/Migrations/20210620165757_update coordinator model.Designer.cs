@@ -4,14 +4,16 @@ using GiveLifeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GiveLife_API.Migrations
 {
     [DbContext(typeof(GiveLifeContext))]
-    partial class GiveLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20210620165757_update coordinator model")]
+    partial class updatecoordinatormodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,10 +250,10 @@ namespace GiveLife_API.Migrations
                     b.Property<decimal?>("RestAmount")
                         .HasColumnType("money");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("int")
+                        .HasColumnType("nvarchar(50)")
                         .HasDefaultValueSql("(N'pending')");
 
                     b.HasKey("PostId");
