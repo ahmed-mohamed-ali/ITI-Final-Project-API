@@ -182,7 +182,7 @@ namespace GiveLife_API.Controllers
 
 
 
-            case1.Status = status;
+            case1.Status = (CaseStatus)Enum.Parse(typeof(CaseStatus), status.ToLower(), true); ;
             _context.Entry(case1).State = EntityState.Modified;
 
             try

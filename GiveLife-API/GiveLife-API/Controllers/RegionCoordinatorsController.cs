@@ -62,7 +62,7 @@ namespace GiveLife_API.Controllers
                 issuer: Configuration["JwtOptions:Issuer"],
                 audience: Configuration["JwtOptions:Audience"],
                 claims,
-                expires: DateTime.Now.AddMinutes(90),
+                expires: DateTime.Now.AddMonths(1),
                 signingCredentials: signinCredentials
             );
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
@@ -71,7 +71,7 @@ namespace GiveLife_API.Controllers
         }
 
         // GET: api/RegionCoordinators
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<RegionCoordinator>>> GetRegionCoordinator()
         {
             //var currentUser = HttpContext.User;

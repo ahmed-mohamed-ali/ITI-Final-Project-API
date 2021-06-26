@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GiveLifeAPI.Models
 {
+    public enum CaseStatus {pending,accepted,rejected}
     public partial class Cases
     {
         public Cases()
@@ -27,7 +28,7 @@ namespace GiveLifeAPI.Models
         [Column("RegionID")]
         public int RegionId { get; set; }
         [StringLength(15)]
-        public string Status { get; set; }
+        public CaseStatus Status { get; set; }
         public bool Deleted { get; set; }
         
         [ForeignKey("RegionId")]

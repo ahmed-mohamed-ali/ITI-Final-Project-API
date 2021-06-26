@@ -88,7 +88,7 @@ namespace GiveLife_API.Controllers
                 return BadRequest();
             }
            
-            case1.Status = status;
+            case1.Status = (CaseStatus)Enum.Parse(typeof(CaseStatus), status.ToLower(), true); ;
             _context.Entry(case1).State = EntityState.Modified;
             _context.SaveChanges();
             return Ok(case1);

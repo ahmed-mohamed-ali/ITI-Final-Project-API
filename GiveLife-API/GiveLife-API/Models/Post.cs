@@ -12,7 +12,7 @@ namespace GiveLifeAPI.Models
     }
     public enum PostStatus
     {
-        pending,completed
+        completed=2,pending=1
     }
 
     public partial class Post
@@ -31,7 +31,7 @@ namespace GiveLifeAPI.Models
         [StringLength(14)]
         public string CaseId { get; set; }
         [Column(TypeName = "money")]
-        public decimal? RequiredAmount { get; set; }
+        public decimal RequiredAmount { get; set; }
         [Column(TypeName = "money")]
         public decimal? RestAmount { get; set; }
         [StringLength(50)]

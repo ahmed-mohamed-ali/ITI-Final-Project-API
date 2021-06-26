@@ -4,14 +4,16 @@ using GiveLifeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GiveLife_API.Migrations
 {
     [DbContext(typeof(GiveLifeContext))]
-    partial class GiveLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20210625060647_update")]
+    partial class update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,10 +47,10 @@ namespace GiveLife_API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("RegionID");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
-                        .HasColumnType("int")
+                        .HasColumnType("nvarchar(15)")
                         .HasDefaultValueSql("(N'pending')");
 
                     b.HasKey("NationalId");
