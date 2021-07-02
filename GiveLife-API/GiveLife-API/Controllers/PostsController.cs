@@ -148,7 +148,7 @@ namespace GiveLife_API.Controllers
             }
             if (caseObj.Status != CaseStatus.accepted)
             {
-                return NotFound("case status not accepted");
+                return NotFound("case status not accepted yet");
             }
           
             Post post = new Post();
@@ -163,15 +163,15 @@ namespace GiveLife_API.Controllers
             post.CreatedTime = DateTime.Now;
             post.RegionId = RegionId;
             _context.Post.Add(post);
+            try
+            {
             await _context.SaveChangesAsync();
-            //try
-            //{
 
-            //}
-            //catch
-            //{
-            //    return StatusCode(StatusCodes.Status500InternalServerError);
-            //}
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
 
             return Ok(new { post, success=true });
         }

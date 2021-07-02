@@ -12,8 +12,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
+//token
 using System.IdentityModel.Tokens.Jwt;
-
+//hashing
+using BC = BCrypt.Net.BCrypt;
 namespace GiveLife_API.Controllers
 {
     [Route("api/[controller]")]
@@ -37,8 +39,9 @@ namespace GiveLife_API.Controllers
             {
                 return BadRequest("Invalid client request");
             }
-            var loginUser = _context.RegionCoordinator.FirstOrDefault(u => u.NationalId.ToLower() == user.NationalId.ToLower()&&u.Password.ToLower()==user.Password.ToLower());
-            if (loginUser==null)
+            var loginUser = _context.RegionCoordinator.FirstOrDefault(u => u.NationalId.ToLower() == user.NationalId.ToLower());
+            
+            if (loginUser==null|| !BC.Verify(user.Password, loginUser.Password))
             {
                 return NotFound();
             }
@@ -89,7 +92,7 @@ namespace GiveLife_API.Controllers
         {
             var currentUser = HttpContext.User;
             int id = int.Parse(currentUser.Claims.FirstOrDefault(i => i.Type == "CoordinatorID").Value);
-            var regionCoordinator = await _context.RegionCoordinator.Include(rc => rc.Post).FirstOrDefaultAsync(r=>r.CoordId==id);
+            var regionCoordinator = await _context.RegionCoordinator.Include(rc => rc.Post).Include(rgc=>rgc.Region).FirstOrDefaultAsync(r=>r.CoordId==id);
             if (regionCoordinator == null)
             {
                 return NotFound();
@@ -129,14 +132,13 @@ namespace GiveLife_API.Controllers
             return NoContent();
         }
 
-        // POST: api/RegionCoordinators
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPost("Register")]
         public async Task<ActionResult<RegionCoordinator>> PostRegionCoordinator(CoordinatorRegisterModel NewRegionCoordinator)
         {
-            if (RegionCoordinatorExistsByNationalID(NewRegionCoordinator.NID, NewRegionCoordinator.visa))
+            if (RegionCoordinatorExistsByNationalID(NewRegionCoordinator.NID))
             {
-                return Conflict("national id or visa num exist before");
+                return Conflict("national id exist before");
             }
             
             var region = _context.Region.FirstOrDefault(r => r.Name.ToLower() == NewRegionCoordinator.region.ToLower());
@@ -144,23 +146,27 @@ namespace GiveLife_API.Controllers
             {
                 return Conflict("region not exist");
             }
+
             RegionCoordinator regionCoordinator = new RegionCoordinator();
             regionCoordinator.RegionId = region.RegionId;
             regionCoordinator.Name = NewRegionCoordinator.name;
             regionCoordinator.NationalId = NewRegionCoordinator.NID;
-            regionCoordinator.Password = NewRegionCoordinator.password;
+            regionCoordinator.Password = BC.HashPassword(NewRegionCoordinator.password);
             regionCoordinator.VisaNum = NewRegionCoordinator.visa;
             regionCoordinator.WalletBalance = 0;
             regionCoordinator.Deleted = false;
             _context.RegionCoordinator.Add(regionCoordinator);
+
+            try
+            {
             await _context.SaveChangesAsync();
 
-            //try {
-                
-            //} catch {
-            //    return StatusCode(StatusCodes.Status500InternalServerError);
-            //}
-          
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
 
             return Ok(new {message="coordinator register successfully",success=true});
         }
@@ -213,9 +219,9 @@ namespace GiveLife_API.Controllers
         {
             return _context.RegionCoordinator.Any(e => e.CoordId == id);
         }
-        private bool RegionCoordinatorExistsByNationalID(string nationalId,string visanum)
+        private bool RegionCoordinatorExistsByNationalID(string nationalId)
         {
-            return _context.RegionCoordinator.Any(e => e.NationalId == nationalId||e.VisaNum==visanum);
+            return _context.RegionCoordinator.Any(e => e.NationalId == nationalId);
         }
     }
 }
