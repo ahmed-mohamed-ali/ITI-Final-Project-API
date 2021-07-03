@@ -1,4 +1,4 @@
-using GiveLife_API.HubConfig;
+
 using GiveLifeAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -106,7 +106,7 @@ namespace GiveLife_API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<DonateHub>("/Donate");
+               
             });
         }
     }

@@ -4,14 +4,16 @@ using GiveLifeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GiveLife_API.Migrations
 {
     [DbContext(typeof(GiveLifeContext))]
-    partial class GiveLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20210703121232_update online donner")]
+    partial class updateonlinedonner
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,6 +107,27 @@ namespace GiveLife_API.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("Cupon");
+                });
+
+            modelBuilder.Entity("GiveLifeAPI.Models.Group", b =>
+                {
+                    b.Property<int>("GroupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("GroupID")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("GroupId");
+
+                    b.ToTable("Group");
                 });
 
             modelBuilder.Entity("GiveLifeAPI.Models.OnlineDonner", b =>
@@ -352,6 +375,46 @@ namespace GiveLife_API.Migrations
                     b.ToTable("RegionCoordinator");
                 });
 
+            modelBuilder.Entity("GiveLifeAPI.Models.User", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("UserID")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ConnectionId")
+                        .HasColumnType("int")
+                        .HasColumnName("ConnectionID");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("GiveLifeAPI.Models.UserGroup", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("UserID");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("GroupID");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserId", "GroupId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("User_Group");
+                });
+
             modelBuilder.Entity("GiveLife_API.Models.Donnation", b =>
                 {
                     b.Property<int>("DonnationID")
@@ -521,6 +584,25 @@ namespace GiveLife_API.Migrations
                     b.Navigation("RegionAdmin");
                 });
 
+            modelBuilder.Entity("GiveLifeAPI.Models.UserGroup", b =>
+                {
+                    b.HasOne("GiveLifeAPI.Models.Group", "Group")
+                        .WithMany("UserGroup")
+                        .HasForeignKey("GroupId")
+                        .HasConstraintName("FK_User_Group_Group")
+                        .IsRequired();
+
+                    b.HasOne("GiveLifeAPI.Models.User", "User")
+                        .WithMany("UserGroup")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_User_Group_User")
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GiveLife_API.Models.Donnation", b =>
                 {
                     b.HasOne("GiveLifeAPI.Models.OnlineDonner", "OnlineDonner")
@@ -574,6 +656,11 @@ namespace GiveLife_API.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("GiveLifeAPI.Models.Group", b =>
+                {
+                    b.Navigation("UserGroup");
+                });
+
             modelBuilder.Entity("GiveLifeAPI.Models.Organization", b =>
                 {
                     b.Navigation("Post");
@@ -604,6 +691,11 @@ namespace GiveLife_API.Migrations
                     b.Navigation("Cupon");
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("GiveLifeAPI.Models.User", b =>
+                {
+                    b.Navigation("UserGroup");
                 });
 #pragma warning restore 612, 618
         }

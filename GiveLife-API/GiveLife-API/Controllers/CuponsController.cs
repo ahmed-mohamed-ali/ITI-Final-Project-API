@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GiveLifeAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using GiveLife_API.Models;
 
 namespace GiveLife_API.Controllers
 {
@@ -61,8 +62,10 @@ namespace GiveLife_API.Controllers
         // PUT: api/Cupons/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCupon(int id, Cupon cupon)
+        public async Task<IActionResult> PutCupon(int id, CreateCuponModel newcupon)
         {
+            Cupon cupon = new Cupon {CuponId=newcupon.CuponId, AmountOfMoney = newcupon.AmountOfMoney, CaseNationalId = newcupon.CaseNationalId, CoordId = newcupon.CoordId, CuponIdentity = newcupon.CuponIdentity, Deleted = false, ExpireDate = DateTime.Now.AddDays(7), RegionId = newcupon.RegionId };
+            cupon.ProductCategory = (NeedCatogry)Enum.Parse(typeof(NeedCatogry), newcupon.ProductCategory.ToLower(), true);
             if (id != cupon.CuponId)
             {
                 return BadRequest();
@@ -91,10 +94,10 @@ namespace GiveLife_API.Controllers
 
         //Check cupon 
 
-        [HttpPut]
+        [HttpGet]
         [Route("checkCupon/{id}")]
 
-        public async Task<IActionResult> PutCases(int id, string caseNationalId)
+        public async Task<IActionResult> checkCupon(int id, string caseNationalId)
         {
 
             var cupon1 = await _context.Cupon.FindAsync(id);
@@ -114,8 +117,10 @@ namespace GiveLife_API.Controllers
         // POST: api/Cupons
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Cupon>> PostCupon(Cupon cupon)
+        public async Task<ActionResult<Cupon>> PostCupon(CreateCuponModel newcupon)
         {
+            Cupon cupon = new Cupon { AmountOfMoney = newcupon.AmountOfMoney, CaseNationalId = newcupon.CaseNationalId, CoordId = newcupon.CoordId, CuponIdentity = newcupon.CuponIdentity, Deleted = false, ExpireDate = DateTime.Now.AddDays(7), RegionId = newcupon.RegionId };
+            cupon.ProductCategory = (NeedCatogry)Enum.Parse(typeof(NeedCatogry), newcupon.ProductCategory.ToLower(), true);
             _context.Cupon.Add(cupon);
             await _context.SaveChangesAsync();
 
@@ -138,21 +143,7 @@ namespace GiveLife_API.Controllers
             return NoContent();
         }
 
-        // GET: api/Cupons/5
-        [HttpGet("CheckCupon/{Cuponid}")]
-        public  IActionResult checkCupon(int Cuponid, string CaseID, string CuponIdentity, string needCatogry)
-        {
-
-            if (!CuponExists(Cuponid))
-                return NotFound();
-            var cupon = _context.Cupon.Find(Cuponid);
-            if (cupon.CaseNationalId.ToLower() == CaseID.ToLower() && cupon.CuponIdentity.ToLower() == CuponIdentity.ToLower() && cupon.ProductCategory.ToString() == needCatogry.ToLower()&&cupon.ExpireDate>=DateTime.Now)
-            {
-                return Ok(cupon);
-            }
-            return Content("cupon not valid");
-
-        }
+      
 
         private bool CuponExists(int id)
         {

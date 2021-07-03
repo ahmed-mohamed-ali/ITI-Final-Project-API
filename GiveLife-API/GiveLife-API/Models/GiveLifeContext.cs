@@ -19,15 +19,15 @@ namespace GiveLifeAPI.Models
 
         public virtual DbSet<Cases> Cases { get; set; }
         public virtual DbSet<Cupon> Cupon { get; set; }
-        public virtual DbSet<Group> Group { get; set; }
+       
         public virtual DbSet<OnlineDonner> OnlineDonner { get; set; }
         public virtual DbSet<Organization> Organization { get; set; }
         public virtual DbSet<Post> Post { get; set; }
         public virtual DbSet<Region> Region { get; set; }
         public virtual DbSet<RegionAdmin> RegionAdmin { get; set; }
         public virtual DbSet<RegionCoordinator> RegionCoordinator { get; set; }
-        public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<UserGroup> UserGroup { get; set; }
+        
+        
         public virtual DbSet<Donnation> Donnations { get; set; }
         public virtual DbSet<MoneyTransformation> MoneyTransformation { get; set; }
 
@@ -139,22 +139,7 @@ namespace GiveLifeAPI.Models
                     .HasConstraintName("FK_RegionCoordinator_Region");
             });
 
-            modelBuilder.Entity<UserGroup>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.GroupId });
-
-                entity.HasOne(d => d.Group)
-                    .WithMany(p => p.UserGroup)
-                    .HasForeignKey(d => d.GroupId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_User_Group_Group");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserGroup)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_User_Group_User");
-            });
+           
 
             OnModelCreatingPartial(modelBuilder);
         }

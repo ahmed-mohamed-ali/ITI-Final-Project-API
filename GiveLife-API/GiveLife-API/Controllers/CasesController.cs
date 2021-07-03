@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GiveLifeAPI.Models;
+using GiveLife_API.Models;
 
 namespace GiveLife_API.Controllers
 {
@@ -88,7 +89,7 @@ namespace GiveLife_API.Controllers
                 return BadRequest();
             }
            
-            case1.Status = (CaseStatus)Enum.Parse(typeof(CaseStatus), status.ToLower(), true); ;
+            case1.Status = (CaseStatus)Enum.Parse(typeof(CaseStatus), status.ToLower(), true); 
             _context.Entry(case1).State = EntityState.Modified;
             _context.SaveChanges();
             return Ok(case1);
@@ -98,8 +99,16 @@ namespace GiveLife_API.Controllers
         // POST: api/Cases
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Cases>> PostCases(Cases cases)
+        public async Task<ActionResult<Cases>> PostCases(CaseRegisterModel newcase)
         {
+            Cases cases = new Cases();
+            cases.Name = newcase.Name;
+            cases.NationalId = newcase.NationalId;
+            cases.FamilyMemberNum = newcase.FamilyMemberNum;
+            cases.ChildNum = newcase.ChildNum;
+            cases.RegionId = newcase.RegionId;
+            cases.Status = CaseStatus.pending;
+            cases.Deleted = false;
             _context.Cases.Add(cases);
             try
             {
@@ -113,7 +122,7 @@ namespace GiveLife_API.Controllers
                 }
                 else
                 {
-                    throw;
+                    return StatusCode(StatusCodes.Status500InternalServerError);
                 }
             }
 
